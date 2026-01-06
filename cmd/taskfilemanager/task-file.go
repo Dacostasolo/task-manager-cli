@@ -6,7 +6,17 @@ import (
 	"path/filepath"
 )
 
+var taskFilePath string
+
+func SetTaskFilePath(path string) {
+	taskFilePath = path
+}
+
 func getTaskFilePath() (string, error) {
+	if taskFilePath != "" {
+		return taskFilePath, nil
+	}
+
 	configDir, err := os.UserConfigDir()
 	if err != nil {
 		return "", fmt.Errorf("failed to get user config directory: %v", err)

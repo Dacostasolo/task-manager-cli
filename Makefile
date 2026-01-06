@@ -7,7 +7,7 @@ build:
 	go build -o ./tmp/task-cli.exe ./cmd
 
 clean:
-	rm -rf tmp
+	@if exist ".\tmp" rmdir /s /q ".\tmp"
 
 install: build
 	@echo "moving the executable to a temporary bin folder"

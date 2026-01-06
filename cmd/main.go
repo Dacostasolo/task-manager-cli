@@ -8,7 +8,7 @@ import (
 )
 
 func main() {
-	fmt.Println("Task Tracker CLI")
+	fmt.Println("🚀 Welcome to Task Tracker CLI! 🚀")
 
 	store := filestore.NewTaskStore()
 

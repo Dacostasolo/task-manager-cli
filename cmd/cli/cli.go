@@ -11,7 +11,7 @@ type CLI struct {
 	store taskstore.Store
 }
 
-func (cli *CLI) dispatchCommand() {
+func (cli *CLI) RunCommand() {
 	if len(os.Args) < 2 {
 		cliUsage()
 		os.Exit(1)
@@ -42,5 +42,5 @@ func InitCLI(store taskstore.Store) *CLI {
 }
 
 func (cli *CLI) Run() {
-	cli.dispatchCommand()
+	cli.RunCommand()
 }

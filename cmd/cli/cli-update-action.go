@@ -36,4 +36,3 @@ func (cli *CLI) updateAction() {
 
 	fmt.Println("Task updated successfully:", task)
 }
-

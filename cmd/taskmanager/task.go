@@ -8,18 +8,18 @@ import (
 )
 
 const (
-	StatusTodo  = "todo"
+	StatusTodo       = "todo"
 	StatusInProgress = "in-progress"
-	StatusDone  = "done"
+	StatusDone       = "done"
 )
 
 var validate = validator.New()
 
 type Task struct {
-	ID          int `json:"id" validate:"required"`
-	Title       string `json:"title" validate:"required"`
-	Description string `json:"description"`
-	Status      string `json:"status" validate:"required,oneof='todo' 'in-progress' 'done'"`
+	ID                int       `json:"id" validate:"required"`
+	Title             string    `json:"title" validate:"required"`
+	Description       string    `json:"description"`
+	Status            string    `json:"status" validate:"required,oneof='todo' 'in-progress' 'done'"`
 	CreationTimestamp time.Time `json:"creation_timestamp"`
 }
 

@@ -16,31 +16,47 @@ type CommandFlags struct {
 }
 
 func cliUsage() {
-	usageText := `Task Manager CLI - A simple task management application
+	usageText := `
+🚀 Welcome to Task Tracker CLI! 🚀
+
+A simple yet powerful command-line tool for managing your tasks.
+
 Usage:
-taskmanager [command] [options]
+  task-cli [command] [options]
+
 Commands:
-add       Add a new task
-list      List all tasks
-update    Update an existing task
-delete    Delete a task
-get       Get details of a specific task
-save      Save tasks to persistent storage
+  add       డ్ Adds a new task
+  list      📜 Lists all tasks
+  update    ♻️  Updates an existing task
+  delete    ❌ Deletes a task
+  get       ℹ️  Gets details of a specific task
+  save      💾 Saves tasks to persistent storage
 
 Options:
--t, -title         Title of the task (required for add)
--d, -description   Description of the task (optional for add)
--s, -status        Status of the task (0 = todo, 1 = in-progress, 2 = done) (optional for add/update)
--id                ID of the task (required for update, delete, get)
--f, -filter        Filter tasks by status when listing (optional for list)
+  -t, -title         📝 Title of the task (required for 'add')
+  -d, -description   📋 Description of the task (optional for 'add')
+  -s, -status        📊 Status of the task (0 = todo, 1 = in-progress, 2 = done) (optional for 'add'/'update')
+  -id                🆔 ID of the task (required for 'update', 'delete', 'get')
+  -f, -filter        🔎 Filter tasks by status when listing (optional for 'list')
 
 Examples:
-taskmanager add -t "Buy groceries" -d "Milk, Bread, Eggs" -s "Pending"
-taskmanager list
-taskmanager update -id 123456 -s "Completed"
-taskmanager delete -id 123456
-taskmanager get -id 123456
-taskmanager save
+  # Add a new task
+  task-cli add -t "Buy groceries" -d "Milk, Bread, Eggs"
+
+  # List all tasks
+  task-cli list
+
+  # Update a task's status to 'in-progress'
+  task-cli update -id 123456 -s 1
+
+  # Delete a task
+  task-cli delete -id 123456
+
+  # Get details of a task
+  task-cli get -id 123456
+
+  # Save all tasks
+  task-cli save
 `
 	fmt.Println(usageText)
 }
