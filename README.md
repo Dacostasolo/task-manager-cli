@@ -6,6 +6,9 @@ A simple yet powerful command-line tool for managing your tasks.
 
 Task Manager CLI is a lightweight, cross-platform application that helps you keep track of your tasks and stay organized. You can add, list, update, delete, and get details of your tasks right from your terminal.
 
+## Project Url
+https://github.com/Dacostasolo/task-manager-cli
+
 ## Getting Started
 
 ### Prerequisites
