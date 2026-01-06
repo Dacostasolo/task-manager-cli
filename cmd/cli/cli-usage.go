@@ -12,6 +12,7 @@ type CommandFlags struct {
 	Status      string
 	Persist     bool
 	ID          int
+	Filter      string
 }
 
 func cliUsage() {
@@ -31,6 +32,7 @@ Options:
 -d, -description   Description of the task (optional for add)
 -s, -status        Status of the task (0 = todo, 1 = in-progress, 2 = done) (optional for add/update)
 -id                ID of the task (required for update, delete, get)
+-f, -filter        Filter tasks by status when listing (optional for list)
 
 Examples:
 taskmanager add -t "Buy groceries" -d "Milk, Bread, Eggs" -s "Pending"
@@ -49,6 +51,7 @@ func parseSubcommandFlags(action string) *CommandFlags {
 	title := flagAction.String("t", "", "Title of the task")
 	description := flagAction.String("d", "", "Description of the task")
 	status := flagAction.Int("s", 0, "Status of the task")
+	filter := flagAction.String("f", "", "Filter tasks by status")
 
 	flagAction.Parse(os.Args[2:])
 
@@ -69,5 +72,6 @@ func parseSubcommandFlags(action string) *CommandFlags {
 		Description: *description,
 		Status:      stringStatus,
 		ID:          *id,
+		Filter:      *filter,
 	}
 }

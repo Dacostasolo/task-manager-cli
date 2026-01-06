@@ -8,7 +8,7 @@ import (
 )
 
 func (cli *CLI) listAction() {
-	parseSubcommandFlags("list")
+	flags := parseSubcommandFlags("list")
 	fmt.Println("Listing all tasks...")
 	tasks, err := cli.store.List(context.Background())
 	if err != nil {
@@ -25,6 +25,9 @@ func (cli *CLI) listAction() {
 	fmt.Fprintln(w, "ID\tTitle\tStatus\tCreated At")
 	fmt.Fprintln(w, "---\t-----\t------\t----------")
 	for _, task := range tasks {
+		if flags.Filter != "" && task.Status != flags.Filter {
+			continue
+		}
 		fmt.Fprintf(w, "%d\t%s\t%s\t%s\n", task.ID, task.Title, task.Status, task.CreationTimestamp.Format("2006-01-02 15:04:05"))
 	}
 	w.Flush()
