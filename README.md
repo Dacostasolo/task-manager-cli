@@ -8,6 +8,7 @@ Task Manager CLI is a lightweight, cross-platform application that helps you kee
 
 ## Project Url
 https://github.com/Dacostasolo/task-manager-cli
+project source url [Roadmap.sh](https://roadmap.sh/projects/task-tracker)
 
 ## Getting Started
 
