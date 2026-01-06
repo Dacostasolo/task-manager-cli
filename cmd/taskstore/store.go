@@ -1,13 +1,16 @@
 package taskstore
 
-import taskmanager "github.com/task-manager-cli/cmd/taskmanager"
+import (
+	"context"
 
-// setup file for task storage operations
+	"github.com/task-manager-cli/cmd/taskmanager"
+)
+
 type Store interface {
-	// method signatures for task storage operations
-	Insert(task *taskmanager.Task) error
-	Retrieve(id int) (*taskmanager.Task, error)
-	Update(task *taskmanager.Task) error
-	Delete(id int) error
-	List() ([]*taskmanager.Task, error)
+	Insert(ctx context.Context, task *taskmanager.Task) error
+	Retrieve(ctx context.Context, id int) (*taskmanager.Task, error)
+	Update(ctx context.Context, task *taskmanager.Task) error
+	Delete(ctx context.Context, id int) error
+	List(ctx context.Context) ([]*taskmanager.Task, error)
+	Persist(ctx context.Context) error
 }

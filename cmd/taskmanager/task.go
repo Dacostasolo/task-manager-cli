@@ -8,43 +8,45 @@ import (
 )
 
 const (
-	StatusPending   = "Pending"
-	StatusInProgress = "In Progress"
-	StatusCompleted  = "Completed"
+	StatusTodo  = "todo"
+	StatusInProgress = "in-progress"
+	StatusDone  = "done"
 )
+
+var validate = validator.New()
 
 type Task struct {
 	ID          int `json:"id" validate:"required"`
 	Title       string `json:"title" validate:"required"`
 	Description string `json:"description"`
-	Status      string `json:"status" validate:"required,oneof='Pending' 'In Progress' 'Completed'"`
+	Status      string `json:"status" validate:"required,oneof='todo' 'in-progress' 'done'"`
+	CreationTimestamp time.Time `json:"creation_timestamp"`
 }
-
 
 func (t *Task) Validate() error {
-	var validate = validator.New()
-	return validate.Struct(t) 
+	return validate.Struct(t)
 }
 
-
-func NewTask( title, description, status string) *Task {
-
+func NewTask(title, description, status string) *Task {
 	if status == "" {
-		status = StatusPending
+		status = StatusTodo
 	}
-	
+
 	return &Task{
-		ID:          time.Now().Nanosecond(), // Simple unique ID based on timestamp
-		Title:       title,
-		Description: description,
-		Status:      status,
+		Title:             title,
+		Description:       description,
+		Status:            status,
+		CreationTimestamp: time.Now(),
 	}
 }
 
 func (t *Task) UpdateStatus(newStatus string) {
-	t.Status = newStatus
+	switch newStatus {
+	case StatusTodo, StatusInProgress, StatusDone:
+		t.Status = newStatus
+	}
 }
 
 func (t *Task) String() string {
-	return fmt.Sprintf("Task(ID: %d, Title: %s, Description: %s, Status: %s)", t.ID, t.Title, t.Description, t.Status)
+	return fmt.Sprintf("Task(ID: %d, Title: %s, Description: %s, Status: %s, Created At: %s)", t.ID, t.Title, t.Description, t.Status, t.CreationTimestamp.Format("2006-01-02 15:04:05"))
 }

@@ -1,15 +1,16 @@
 package filestore
 
 import (
+	"context"
 	"fmt"
+	"sync"
 
 	"github.com/task-manager-cli/cmd/taskfilemanager"
 	"github.com/task-manager-cli/cmd/taskmanager"
-	"github.com/task-manager-cli/cmd/utils"
 )
 
 type TaskStore struct {
-	// internal storage, e.g., a map or slice
+	mu          sync.RWMutex
 	tasks       map[int]*taskmanager.Task
 	hasReadFile bool
 }
@@ -20,88 +21,122 @@ func NewTaskStore() *TaskStore {
 	}
 }
 
-// insert task into store
-func (ts *TaskStore) Insert(task *taskmanager.Task) error {
+func (ts *TaskStore) Insert(ctx context.Context, task *taskmanager.Task) error {
+	ts.mu.Lock()
+	defer ts.mu.Unlock()
+
+	if err := ts.loadTasksFromFile(); err != nil {
+		return err
+	}
+
+	maxID := 0
+	for _, t := range ts.tasks {
+		if t.ID > maxID {
+			maxID = t.ID
+		}
+	}
+	task.ID = maxID + 1
+
 	if err := task.Validate(); err != nil {
 		return err
 	}
-	
+
 	ts.tasks[task.ID] = task
-	return nil
+	return persistTasksToFile(ts)
 }
 
-// retrieve task from store by ID
-func (ts *TaskStore) Retrieve(id int) (*taskmanager.Task, error) {
+func (ts *TaskStore) Retrieve(ctx context.Context, id int) (*taskmanager.Task, error) {
+	ts.mu.RLock()
+	defer ts.mu.RUnlock()
+
+	if err := ts.loadTasksFromFile(); err != nil {
+		return nil, err
+	}
+
 	if task, exists := ts.tasks[id]; exists {
 		return task, nil
 	}
 
-	if !ts.hasReadFile {
-		// load tasks from file
-		data, err := taskfilemanager.ReadTasksFromFile()
-		if err != nil {
-			return nil, err
-		}
-		// update the cache
-		store, err := utils.BytesToTaskMap(data)
-		if err != nil {
-			return nil, err
-		}
-
-		for id, task := range store {
-			ts.tasks[id] = task
-		}
-
-		ts.hasReadFile = true
-		if task, exists := ts.tasks[id]; exists {
-			return task, nil
-		}
-	}
-
-	return nil, fmt.Errorf("task not found")
+	return nil, fmt.Errorf("task with ID %d not found", id)
 }
 
-// update task in store
-func (ts *TaskStore) Update(task *taskmanager.Task) error {
+func (ts *TaskStore) Update(ctx context.Context, task *taskmanager.Task) error {
+	ts.mu.Lock()
+	defer ts.mu.Unlock()
+
+	if err := task.Validate(); err != nil {
+		return err
+	}
+
+	if err := ts.loadTasksFromFile(); err != nil {
+		return err
+	}
+
 	if _, exists := ts.tasks[task.ID]; exists {
 		ts.tasks[task.ID] = task
-		return nil
+		return persistTasksToFile(ts)
 	}
-	return fmt.Errorf("task not found")
+
+	return fmt.Errorf("task with ID %d not found", task.ID)
 }
 
-// delete task from store by ID
-func (ts *TaskStore) Delete(id int) error {
+func (ts *TaskStore) Delete(ctx context.Context, id int) error {
+	ts.mu.Lock()
+	defer ts.mu.Unlock()
+
+	if err := ts.loadTasksFromFile(); err != nil {
+		return err
+	}
+
 	if _, exists := ts.tasks[id]; exists {
 		delete(ts.tasks, id)
-		return nil
+		return persistTasksToFile(ts)
 	}
-	return fmt.Errorf("task not found")
+	return fmt.Errorf("task with ID %d not found", id)
 }
 
-// list all tasks in store
-func (ts *TaskStore) List() ([]*taskmanager.Task, error) {
-	var taskList []*taskmanager.Task
+func (ts *TaskStore) List(ctx context.Context) ([]*taskmanager.Task, error) {
+	ts.mu.RLock()
+	defer ts.mu.RUnlock()
 
-	if !ts.hasReadFile {
-		// load tasks from file
-		data, err := taskfilemanager.ReadTasksFromFile()
-		if err != nil {
-			return nil, err
-		}
-		store, err := utils.BytesToTaskMap(data)
-		if err != nil {
-			return nil, err
-		}
-		// update the cache
-		for id, task := range store {
-			ts.tasks[id] = task
-		}
-		ts.hasReadFile = true
+	if err := ts.loadTasksFromFile(); err != nil {
+		return nil, err
 	}
 
+	var taskList []*taskmanager.Task
 	for _, task := range ts.tasks {
 		taskList = append(taskList, task)
 	}
 	return taskList, nil
+}
+
+func (ts *TaskStore) loadTasksFromFile() error {
+	if ts.hasReadFile {
+		return nil
+	}
+
+	data, err := taskfilemanager.ReadTasksFromFile()
+	if err != nil {
+		return err
+	}
+
+	if len(data) > 0 {
+		store, err := bytesToTaskMap(data)
+		if err != nil {
+			return err
+		}
+		for id, task := range store {
+			ts.tasks[id] = task
+		}
+	}
+
+	ts.hasReadFile = true
+	return nil
+}
+
+func (ts *TaskStore) Persist(ctx context.Context) error {
+	ts.mu.Lock()
+	defer ts.mu.Unlock()
+
+	return persistTasksToFile(ts)
 }

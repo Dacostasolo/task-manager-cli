@@ -1,10 +1,17 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/task-manager-cli/cmd/cli"
+	"github.com/task-manager-cli/cmd/taskstore/filestore"
+)
 
 func main() {
-	// Application entry point
-	fmt.Println("Hello, World!")
+	fmt.Println("Task Tracker CLI")
+
+	store := filestore.NewTaskStore()
+
+	cli := cli.InitCLI(store)
+	cli.Run()
 }
-
-
