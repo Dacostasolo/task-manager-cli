@@ -16,7 +16,7 @@ Task Manager CLI is a lightweight, cross-platform application that helps you kee
 
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-username/task-manager-cli.git
+   git clone https://github.com/Dacostasolo/task-manager-cli.git
    ```
 2. Navigate to the project directory:
    ```sh

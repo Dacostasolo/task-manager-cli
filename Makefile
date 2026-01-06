@@ -1,7 +1,7 @@
 .PHONY: run build clean install
 
 run:
-	air run
+	go run ./cmd
 
 build:
 	go build -o ./tmp/task-cli.exe ./cmd
